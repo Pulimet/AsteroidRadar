@@ -23,8 +23,7 @@ data class Kilometers(@SerializedName("estimated_diameter_max") val max: Double)
 @Parcelize
 data class CloseApproachData(
     @SerializedName("relative_velocity") val relativeVelocity: RelativeVelocity,
-    @SerializedName("miss_distance") val missDistance: MissDistance,
-    @SerializedName("close_approach_date") val closeApproachDate: String
+    @SerializedName("miss_distance") val missDistance: MissDistance
 ) : Parcelable
 
 @Parcelize

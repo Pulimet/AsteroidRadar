@@ -44,8 +44,7 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val asteroidsFeed = nasaRepo.getAsteroidForToday()
             if (asteroidsFeed.nearEarthObjects.isNotEmpty()) {
-                val rawList = asteroidsFeed.nearEarthObjects.entries.first().value
-                _asteroidsList.value = convertAsteroidData(rawList)
+                _asteroidsList.value = convertAsteroidData(asteroidsFeed.nearEarthObjects)
             }
             Log.d("Asteroids", "SIZE: ${asteroidsFeed.nearEarthObjects.size}")
         }
