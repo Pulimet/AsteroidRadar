@@ -1,5 +1,6 @@
 package com.udacity.asteroidradar.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.repos.NasaRepo
@@ -20,12 +21,24 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
     val imageDescription = _imageDescription.asStateFlow()
 
     init {
+        getImageOfTheDay()
+        getAsteroidForToday()
+    }
+
+    private fun getImageOfTheDay() {
         viewModelScope.launch(Dispatchers.IO) {
             val pictureOfDay = nasaRepo.getImageOfTheDay()
             if (pictureOfDay.mediaType == MEDIA_TYPE_IMAGE) {
                 _imageUrl.value = pictureOfDay.url
                 _imageDescription.value = pictureOfDay.title
             }
+        }
+    }
+    private fun getAsteroidForToday() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val asteroidsFeed = nasaRepo.getAsteroidForToday()
+
+            Log.d("Asteroids", "SIZE: ${asteroidsFeed.nearEarthObjects.size}")
         }
     }
 }
