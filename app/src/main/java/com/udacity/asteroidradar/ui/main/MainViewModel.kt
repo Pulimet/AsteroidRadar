@@ -3,6 +3,8 @@ package com.udacity.asteroidradar.ui.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.udacity.asteroidradar.api.convertAsteroidData
+import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.repos.NasaRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +22,9 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
     private val _imageDescription = MutableStateFlow<String?>(null)
     val imageDescription = _imageDescription.asStateFlow()
 
+    private val _asteroidsList = MutableStateFlow<List<Asteroid>>(emptyList())
+    val asteroidsList = _asteroidsList.asStateFlow()
+
     init {
         getImageOfTheDay()
         getAsteroidForToday()
@@ -34,10 +39,14 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
             }
         }
     }
+
     private fun getAsteroidForToday() {
         viewModelScope.launch(Dispatchers.IO) {
             val asteroidsFeed = nasaRepo.getAsteroidForToday()
-
+            if (asteroidsFeed.nearEarthObjects.isNotEmpty()) {
+                val rawList = asteroidsFeed.nearEarthObjects.entries.first().value
+                _asteroidsList.value = convertAsteroidData(rawList)
+            }
             Log.d("Asteroids", "SIZE: ${asteroidsFeed.nearEarthObjects.size}")
         }
     }

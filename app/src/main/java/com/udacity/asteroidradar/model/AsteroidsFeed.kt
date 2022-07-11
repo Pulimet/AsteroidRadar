@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AsteroidsFeed(
-    @SerializedName("near_earth_objects") val nearEarthObjects: Map<String, List<Asteroid>>
+    @SerializedName("near_earth_objects") val nearEarthObjects: Map<String, List<AsteroidNetwork>>
 ) : Parcelable
