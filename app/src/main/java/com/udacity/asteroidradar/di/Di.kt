@@ -1,7 +1,7 @@
 package com.udacity.asteroidradar.di
 
 import android.content.Context
-import com.udacity.asteroidradar.main.MainViewModel
+import com.udacity.asteroidradar.ui.main.MainViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.context.startKoin
