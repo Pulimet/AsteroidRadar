@@ -5,9 +5,7 @@ import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.R
-import com.udacity.asteroidradar.collectIt
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,22 +29,10 @@ class MainFragment : Fragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
-        observeViewModel()
     }
 
     private fun setupMenu() {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    private fun observeViewModel() {
-        viewModel.apply {
-            imageUrl.collectIt(viewLifecycleOwner) {
-                it?.let { Picasso.get().load(it).into(binding.activityMainImageOfTheDay) }
-            }
-            imageDescription.collectIt(viewLifecycleOwner) {
-                it?.let { binding.activityMainImageOfTheDay.contentDescription = it }
-            }
-        }
     }
 
     // MenuProvider
