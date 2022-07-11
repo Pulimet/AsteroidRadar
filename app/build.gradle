@@ -54,8 +54,10 @@ dependencies {
 
     // Network
     implementation "com.squareup.retrofit2:retrofit:$retorfit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retorfit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retorfit_version"
     implementation "com.squareup.retrofit2:converter-scalars:$retorfit_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.3"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
 

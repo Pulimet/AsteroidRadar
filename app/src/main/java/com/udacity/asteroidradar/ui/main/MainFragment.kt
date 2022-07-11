@@ -5,27 +5,35 @@ import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.collectIt
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainFragment : Fragment(), MenuProvider {
 
+    private lateinit var binding: FragmentMainBinding
     private val viewModel: MainViewModel by viewModel()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, b: Bundle?): View {
-        val binding = setDataBinding(inflater)
+        setDataBinding()
         return binding.root
     }
 
-    private fun setDataBinding(inflater: LayoutInflater) = FragmentMainBinding.inflate(inflater).also {
-        it.lifecycleOwner = this
-        it.viewModel = viewModel
+    private fun setDataBinding() {
+        binding = FragmentMainBinding.inflate(layoutInflater).also {
+            it.lifecycleOwner = this
+            it.viewModel = viewModel
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
+        viewModel.imageUrl.collectIt(viewLifecycleOwner) {
+            it?.let { Picasso.get().load(it).into(binding.activityMainImageOfTheDay) }
+        }
     }
 
     private fun setupMenu() {
