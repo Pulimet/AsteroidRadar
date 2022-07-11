@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
+    companion object {
+        private const val MEDIA_TYPE_IMAGE = "image"
+    }
 
     private val _imageUrl = MutableStateFlow<String?>(null)
     val imageUrl = _imageUrl.asStateFlow()
@@ -19,7 +22,10 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val pictureOfDay = nasaRepo.getImageOfTheDay()
-            _imageUrl.value = pictureOfDay.url
+            if (pictureOfDay.mediaType == MEDIA_TYPE_IMAGE) {
+                _imageUrl.value = pictureOfDay.url
+                _imageDescription.value = pictureOfDay.title
+            }
         }
     }
 }

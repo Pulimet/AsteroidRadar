@@ -1,6 +1,10 @@
 package com.udacity.asteroidradar.model
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
-data class PictureOfDay(@Json(name = "media_type") val mediaType: String, val title: String,
-                        val url: String)
+
+data class PictureOfDay(
+    @SerializedName("media_type") val mediaType: String,
+    val title: String,
+    val url: String
+)

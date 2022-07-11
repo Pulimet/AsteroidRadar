@@ -31,13 +31,22 @@ class MainFragment : Fragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
-        viewModel.imageUrl.collectIt(viewLifecycleOwner) {
-            it?.let { Picasso.get().load(it).into(binding.activityMainImageOfTheDay) }
-        }
+        observeViewModel()
     }
 
     private fun setupMenu() {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun observeViewModel() {
+        viewModel.apply {
+            imageUrl.collectIt(viewLifecycleOwner) {
+                it?.let { Picasso.get().load(it).into(binding.activityMainImageOfTheDay) }
+            }
+            imageDescription.collectIt(viewLifecycleOwner) {
+                it?.let { binding.activityMainImageOfTheDay.contentDescription = it }
+            }
+        }
     }
 
     // MenuProvider
