@@ -7,9 +7,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
+import com.udacity.asteroidradar.model.Asteroid
+import com.udacity.asteroidradar.ui.main.recycler.AsteroidAdapter
+import com.udacity.asteroidradar.ui.main.recycler.AsteroidListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainFragment : Fragment(), MenuProvider {
+class MainFragment : Fragment(), MenuProvider, AsteroidListener {
 
     private lateinit var binding: FragmentMainBinding
     private val viewModel: MainViewModel by viewModel()
@@ -29,10 +32,15 @@ class MainFragment : Fragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
+        setRecyclerView()
     }
 
     private fun setupMenu() {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun setRecyclerView() {
+        binding.asteroidRecycler.adapter = AsteroidAdapter(this)
     }
 
     // MenuProvider
@@ -48,5 +56,10 @@ class MainFragment : Fragment(), MenuProvider {
             else -> return false
         }
         return true
+    }
+
+    // AsteroidListener
+    override fun onClick(asteroid: Asteroid) {
+        viewModel.onAsteroidClick(asteroid)
     }
 }

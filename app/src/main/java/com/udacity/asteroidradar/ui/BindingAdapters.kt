@@ -1,10 +1,14 @@
 package com.udacity.asteroidradar.ui
 
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.model.Asteroid
+import com.udacity.asteroidradar.ui.main.recycler.AsteroidAdapter
 
 // Image of the day
 @BindingAdapter("imageOfTheDay")
@@ -17,7 +21,24 @@ fun bindImageOfTheDayDescription(imageView: ImageView, description: String?) {
     description?.let { imageView.contentDescription = it }
 }
 
-// List
+// RecyclerView
+@BindingAdapter("listData")
+fun bindRecyclerView(recyclerView: RecyclerView, data: List<Asteroid>) {
+    val adapter = recyclerView.adapter as AsteroidAdapter
+    adapter.submitList(data) {
+        recyclerView.scrollToPosition(0) // scroll to the top after the diffs calculate
+    }
+}
+
+@BindingAdapter("showOnlyWhenEmpty")
+fun View.showOnlyWhenEmpty(data: List<Asteroid>?) {
+    visibility = when {
+        data == null || data.isEmpty() -> View.VISIBLE
+        else -> View.GONE
+    }
+}
+
+// List Item
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
     if (isHazardous) {

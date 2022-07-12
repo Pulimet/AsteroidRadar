@@ -4,9 +4,13 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object NetworkObjectsCreator {
     fun createOkHttpClient(logger: HttpLoggingInterceptor.Logger) = OkHttpClient.Builder()
+        .connectTimeout(5L, TimeUnit.SECONDS)
+        .readTimeout(10L, TimeUnit.SECONDS)
+        .callTimeout(15L, TimeUnit.SECONDS)
         .addInterceptor(HttpLoggingInterceptor(logger).apply {
             level = HttpLoggingInterceptor.Level.BASIC
         })

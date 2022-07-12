@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout">
+
+    <data>
+
+        <variable
+            name="asteroid"
+            type="com.udacity.asteroidradar.model.Asteroid" />
+
+        <variable
+            name="clickListener"
+            type="com.udacity.asteroidradar.ui.main.recycler.AsteroidListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(asteroid)}"
+        android:padding="16dp"
+        tools:context="com.udacity.asteroidradar.ui.main.MainFragment">
+
+        <TextView
+            android:id="@+id/tvCodeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{asteroid.codename}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#FFFFFFFF"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/ivIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="68347 (2001 KB67)" />
+
+        <TextView
+            android:id="@+id/tvData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@{asteroid.closeApproachDate}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#FFFFFFFF"
+            app:layout_constraintEnd_toStartOf="@id/ivIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCodeName"
+            tools:text="2022-07-12" />
+
+        <ImageView
+            android:id="@+id/ivIcon"
+            statusIcon="@{asteroid.potentiallyHazardous}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_status_potentially_hazardous" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

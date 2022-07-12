@@ -49,4 +49,9 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
             Log.d("Asteroids", "SIZE: ${asteroidsFeed.nearEarthObjects.size}")
         }
     }
+
+    // User Actions
+    fun onAsteroidClick(asteroid: Asteroid) {
+        TODO("Not yet implemented")
+    }
 }
