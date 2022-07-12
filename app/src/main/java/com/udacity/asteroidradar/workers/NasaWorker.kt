@@ -5,10 +5,14 @@ import android.util.Log
 import androidx.work.*
 import com.udacity.asteroidradar.App
 import com.udacity.asteroidradar.api.convertAsteroidData
+import com.udacity.asteroidradar.api.retryIO
 import com.udacity.asteroidradar.db.NasaDao
 import com.udacity.asteroidradar.db.PictureDao
 import com.udacity.asteroidradar.repos.NasaRepo
 import com.udacity.asteroidradar.ui.main.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
@@ -28,7 +32,7 @@ class NasaWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
         }
 
         private fun getPeriodicWorkRequest() = PeriodicWorkRequestBuilder<NasaWorker>(1, TimeUnit.DAYS)
-            .setInitialDelay(30, TimeUnit.SECONDS)
+            .setInitialDelay(50, TimeUnit.SECONDS)
             .setConstraints(getConstraints())
             .build()
 
@@ -44,9 +48,11 @@ class NasaWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
 
     override suspend fun doWork() = try {
         Log.d(App.TAG, " doWork() launched")
-        fetchAndSaveToDbAsteroidsFeed()
-        fetchAndSaveToDbImageOfTheDay()
-        deleteOldAsteroids()
+        withContext(Dispatchers.IO) {
+            launch { fetchAndSaveToDbAsteroidsFeed() }
+            launch { fetchAndSaveToDbImageOfTheDay() }
+            launch { deleteOldAsteroids() }
+        }
         Log.d(App.TAG, " doWork() Success")
         Result.success()
     } catch (e: Exception) {
@@ -55,14 +61,15 @@ class NasaWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
     }
 
     private suspend fun fetchAndSaveToDbAsteroidsFeed() {
-        val asteroidsFeed = nasaRepo.getAsteroidForToday()
-        if (asteroidsFeed.nearEarthObjects.isNotEmpty()) {
-            nasaDao.insertAll(convertAsteroidData(asteroidsFeed.nearEarthObjects))
+        retryIO(desc = "Get Asteroids Feed") { nasaRepo.getAsteroidForToday() }?.apply {
+            if (nearEarthObjects.isNotEmpty()) {
+                nasaDao.insertAll(convertAsteroidData(nearEarthObjects))
+            }
         }
     }
 
     private suspend fun fetchAndSaveToDbImageOfTheDay() {
-        nasaRepo.getImageOfTheDay().apply {
+        retryIO(desc = "Get Image of the day") { nasaRepo.getImageOfTheDay() }?.apply {
             if (mediaType == MainViewModel.MEDIA_TYPE_IMAGE) {
                 pictureDao.insertPicture(this)
             }
