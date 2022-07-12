@@ -5,16 +5,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.udacity.asteroidradar.api.convertAsteroidData
 import com.udacity.asteroidradar.api.retryIO
+import com.udacity.asteroidradar.db.NasaDao
 import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.repos.NasaRepo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
+class MainViewModel(private val nasaRepo: NasaRepo, private val nasaDao: NasaDao) : ViewModel() {
     companion object {
         private const val MEDIA_TYPE_IMAGE = "image"
     }
@@ -28,8 +26,7 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
     private val _imageDescription = MutableStateFlow<String?>(null)
     val imageDescription = _imageDescription.asStateFlow()
 
-    private val _asteroidsList = MutableStateFlow<List<Asteroid>>(emptyList())
-    val asteroidsList = _asteroidsList.asStateFlow()
+    val asteroidsList = nasaDao.getAsteroids().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     init {
         getImageOfTheDay()
@@ -50,7 +47,7 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             retryIO(desc = "Get Asteroids Feed") { nasaRepo.getAsteroidForToday() }?.apply {
                 if (nearEarthObjects.isNotEmpty()) {
-                    _asteroidsList.value = convertAsteroidData(nearEarthObjects)
+                    nasaDao.insertAll(convertAsteroidData(nearEarthObjects))
                 }
             }
         }
