@@ -8,7 +8,6 @@ import java.util.*
 @Dao
 interface NasaDao {
 
-    // TODO Add content description to the views: Details images and dialog button. Check if it works correctly with talk back.
     // TODO Make sure the entire app works without an internet connection. (Picture of the day for example)
     // TODO Modify the app to support multiple languages, device sizes, and orientations.
     // TODO Make the app delete asteroids from the previous day once a day using the same workManager that downloads the asteroids.
