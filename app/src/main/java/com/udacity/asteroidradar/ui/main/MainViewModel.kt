@@ -24,7 +24,7 @@ class MainViewModel(
 ) : ViewModel() {
 
     companion object {
-        private const val MEDIA_TYPE_IMAGE = "image"
+        const val MEDIA_TYPE_IMAGE = "image"
     }
 
     private val _navigate = MutableSharedFlow<NavDirections>()

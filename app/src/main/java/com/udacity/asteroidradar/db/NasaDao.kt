@@ -8,7 +8,6 @@ import java.util.*
 @Dao
 interface NasaDao {
 
-    // TODO Make the app delete asteroids from the previous day once a day using the same workManager that downloads the asteroids.
     // TODO Match the styles for the details screen subtitles and values to make it consistent, and make it look like what is in the designs.
     // TODO If you're submitting via a public Github repository, please make sure any external API key that you utilize, has been removed from your code.
     //  It's highly unsafe (and often breaks the Terms of Service) to include API keys in public repos, so you need to remove yours.
@@ -28,5 +27,8 @@ interface NasaDao {
     suspend fun deleteAsteroid(asteroid: Asteroid)
 
     @Query("DELETE FROM asteroids")
-    suspend fun deleteAllAsteroids(): Int
+    suspend fun deleteAllAsteroids()
+
+    @Query("DELETE FROM asteroids WHERE date < :untilDate")
+    suspend fun deleteOldAsteroids(untilDate: Date = Date())
 }

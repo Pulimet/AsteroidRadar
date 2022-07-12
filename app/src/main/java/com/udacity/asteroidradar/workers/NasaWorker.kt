@@ -6,7 +6,9 @@ import androidx.work.*
 import com.udacity.asteroidradar.App
 import com.udacity.asteroidradar.api.convertAsteroidData
 import com.udacity.asteroidradar.db.NasaDao
+import com.udacity.asteroidradar.db.PictureDao
 import com.udacity.asteroidradar.repos.NasaRepo
+import com.udacity.asteroidradar.ui.main.MainViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
@@ -36,13 +38,15 @@ class NasaWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
             .build()
     }
 
-    private val moviesRepo: NasaRepo by inject()
+    private val nasaRepo: NasaRepo by inject()
     private val nasaDao: NasaDao by inject()
+    private val pictureDao: PictureDao by inject()
 
     override suspend fun doWork() = try {
         Log.d(App.TAG, " doWork() launched")
         fetchAndSaveToDbAsteroidsFeed()
         fetchAndSaveToDbImageOfTheDay()
+        deleteOldAsteroids()
         Log.d(App.TAG, " doWork() Success")
         Result.success()
     } catch (e: Exception) {
@@ -50,15 +54,23 @@ class NasaWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
         Result.retry()
     }
 
-    private suspend fun fetchAndSaveToDbImageOfTheDay() {
-        moviesRepo.getImageOfTheDay()  // TODO save result to DB + Load url from DB + Preload image with picasso
-    }
-
     private suspend fun fetchAndSaveToDbAsteroidsFeed() {
-        val asteroidsFeed = moviesRepo.getAsteroidForToday()
+        val asteroidsFeed = nasaRepo.getAsteroidForToday()
         if (asteroidsFeed.nearEarthObjects.isNotEmpty()) {
             nasaDao.insertAll(convertAsteroidData(asteroidsFeed.nearEarthObjects))
         }
+    }
+
+    private suspend fun fetchAndSaveToDbImageOfTheDay() {
+        nasaRepo.getImageOfTheDay().apply {
+            if (mediaType == MainViewModel.MEDIA_TYPE_IMAGE) {
+                pictureDao.insertPicture(this)
+            }
+        }
+    }
+
+    private suspend fun deleteOldAsteroids() {
+        nasaDao.deleteOldAsteroids()
     }
 
 }
