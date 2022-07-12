@@ -22,7 +22,7 @@
             <ImageView
                 android:id="@+id/activity_main_image_of_the_day"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:adjustViewBounds="true"
                 app:asteroidStatusImage="@{asteroid.potentiallyHazardous}"
                 app:layout_constraintEnd_toEndOf="parent"
