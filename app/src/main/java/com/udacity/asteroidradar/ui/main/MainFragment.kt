@@ -5,7 +5,9 @@ import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.collectIt
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.ui.main.recycler.AsteroidAdapter
@@ -33,6 +35,7 @@ class MainFragment : Fragment(), MenuProvider, AsteroidListener {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
         setRecyclerView()
+        observeViewModel()
     }
 
     private fun setupMenu() {
@@ -41,6 +44,10 @@ class MainFragment : Fragment(), MenuProvider, AsteroidListener {
 
     private fun setRecyclerView() {
         binding.asteroidRecycler.adapter = AsteroidAdapter(this)
+    }
+
+    private fun observeViewModel() {
+        viewModel.navigate.collectIt(viewLifecycleOwner) { findNavController().navigate(it) }
     }
 
     // MenuProvider

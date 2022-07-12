@@ -3,11 +3,14 @@ package com.udacity.asteroidradar.ui.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavDirections
 import com.udacity.asteroidradar.api.convertAsteroidData
 import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.repos.NasaRepo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -15,6 +18,9 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
     companion object {
         private const val MEDIA_TYPE_IMAGE = "image"
     }
+
+    private val _navigate = MutableSharedFlow<NavDirections>()
+    val navigate = _navigate.asSharedFlow()
 
     private val _imageUrl = MutableStateFlow<String?>(null)
     val imageUrl = _imageUrl.asStateFlow()
@@ -52,6 +58,8 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
 
     // User Actions
     fun onAsteroidClick(asteroid: Asteroid) {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            _navigate.emit(MainFragmentDirections.actionShowDetail(asteroid))
+        }
     }
 }
