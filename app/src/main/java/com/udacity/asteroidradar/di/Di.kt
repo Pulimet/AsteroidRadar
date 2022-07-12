@@ -1,9 +1,11 @@
 package com.udacity.asteroidradar.di
 
 import android.content.Context
+import androidx.room.Room
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.NasaApiService
 import com.udacity.asteroidradar.api.NetworkObjectsCreator
+import com.udacity.asteroidradar.db.NasaDatabase
 import com.udacity.asteroidradar.logs.OkHttpLogs
 import com.udacity.asteroidradar.repos.NasaRepo
 import com.udacity.asteroidradar.ui.main.MainViewModel
@@ -27,6 +29,12 @@ object Di {
         single<HttpLoggingInterceptor.Logger> { OkHttpLogs() }
         single { NetworkObjectsCreator.createOkHttpClient(get()) }
         single { NetworkObjectsCreator.createWebService<NasaApiService>(get(), Constants.BASE_URL) }
+
+        // DataBase
+        single {
+            Room.databaseBuilder(androidContext(), NasaDatabase::class.java, "nasa_database").build()
+        }
+        single { get<NasaDatabase>().nasaDao() }
 
         // Repos
         singleOf(::NasaRepo)
