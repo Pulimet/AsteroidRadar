@@ -1,10 +1,10 @@
 package com.udacity.asteroidradar.ui.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
 import com.udacity.asteroidradar.api.convertAsteroidData
+import com.udacity.asteroidradar.api.retryIO
 import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.repos.NasaRepo
 import kotlinx.coroutines.Dispatchers
@@ -48,11 +48,11 @@ class MainViewModel(private val nasaRepo: NasaRepo) : ViewModel() {
 
     private fun getAsteroidForToday() {
         viewModelScope.launch(Dispatchers.IO) {
-            val asteroidsFeed = nasaRepo.getAsteroidForToday()
-            if (asteroidsFeed.nearEarthObjects.isNotEmpty()) {
-                _asteroidsList.value = convertAsteroidData(asteroidsFeed.nearEarthObjects)
+            retryIO(desc = "Get Asteroids Feed") { nasaRepo.getAsteroidForToday() }?.apply {
+                if (nearEarthObjects.isNotEmpty()) {
+                    _asteroidsList.value = convertAsteroidData(nearEarthObjects)
+                }
             }
-            Log.d("Asteroids", "SIZE: ${asteroidsFeed.nearEarthObjects.size}")
         }
     }
 
