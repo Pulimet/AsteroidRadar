@@ -1,19 +1,24 @@
 package com.udacity.asteroidradar.api
 
 import android.util.Log
+import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.model.AsteroidNetwork
 import kotlinx.coroutines.delay
 import retrofit2.HttpException
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun convertAsteroidData(list: Map<String, List<AsteroidNetwork>>): List<Asteroid> {
     val asteroidsList = mutableListOf<Asteroid>()
+    val simpleDateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.US)
     list.forEach {
         asteroidsList.addAll(it.value.map { asteroid ->
             Asteroid(
                 asteroid.id,
                 asteroid.name,
+                simpleDateFormat.parse(it.key) ?: Date(),
                 it.key,
                 asteroid.absoluteMagnitude,
                 asteroid.estimatedDiameter.kilometers.max,
