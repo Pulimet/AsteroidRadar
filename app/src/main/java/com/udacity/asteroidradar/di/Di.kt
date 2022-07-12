@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.NasaApiService
 import com.udacity.asteroidradar.api.NetworkObjectsCreator
@@ -35,6 +36,9 @@ object Di {
             Room.databaseBuilder(androidContext(), NasaDatabase::class.java, "nasa_database").build()
         }
         single { get<NasaDatabase>().nasaDao() }
+
+        // WorkManager
+        single { WorkManager.getInstance(androidContext()) }
 
         // Repos
         singleOf(::NasaRepo)

@@ -7,8 +7,7 @@ import java.util.*
 
 @Dao
 interface NasaDao {
-    // TODO Be able to cache the data of the asteroid by using a worker, so it downloads and saves today's asteroids in
-    //  background once a day when the device is charging and wifi is enabled.
+
     // TODO Add content description to the views: Details images and dialog button. Check if it works correctly with talk back.
     // TODO Make sure the entire app works without an internet connection. (Picture of the day for example)
     // TODO Modify the app to support multiple languages, device sizes, and orientations.

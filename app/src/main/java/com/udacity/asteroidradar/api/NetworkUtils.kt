@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.api
 
 import android.util.Log
+import com.udacity.asteroidradar.App
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.model.Asteroid
 import com.udacity.asteroidradar.model.AsteroidNetwork
@@ -39,15 +40,14 @@ suspend fun <T> retryIO(
     desc: String = "",
     block: suspend () -> T?
 ): T? {
-    val tag = "Asteroid"
     var currentDelay = initialDelay
     repeat(times) {
         try {
             return block()
         } catch (e: IOException) {
-            Log.e(tag, "Description (IOException): $desc, fail counter: ${it + 1}, Exception: ${e.message}")
+            Log.e(App.TAG, "Description (IOException): $desc, fail counter: ${it + 1}, Exception: ${e.message}")
         } catch (e: HttpException) {
-            Log.e(tag, "Description (HttpException): $desc, fail counter: ${it + 1}, Exception: ${e.message} ")
+            Log.e(App.TAG, "Description (HttpException): $desc, fail counter: ${it + 1}, Exception: ${e.message} ")
         }
         delay(currentDelay)
         currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
