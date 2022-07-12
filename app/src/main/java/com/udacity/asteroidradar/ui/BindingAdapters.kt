@@ -13,7 +13,9 @@ import com.udacity.asteroidradar.ui.main.recycler.AsteroidAdapter
 // Image of the day
 @BindingAdapter("imageOfTheDay")
 fun bindImageOfTheDay(imageView: ImageView, url: String?) {
-    url?.let { Picasso.get().load(it).into(imageView) }
+    if (!url.isNullOrEmpty()) {
+        Picasso.get().load(url).into(imageView)
+    }
 }
 
 @BindingAdapter("imageOfTheDayDescription")

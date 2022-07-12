@@ -8,7 +8,6 @@ import java.util.*
 @Dao
 interface NasaDao {
 
-    // TODO Make sure the entire app works without an internet connection. (Picture of the day for example)
     // TODO Modify the app to support multiple languages, device sizes, and orientations.
     // TODO Make the app delete asteroids from the previous day once a day using the same workManager that downloads the asteroids.
     // TODO Match the styles for the details screen subtitles and values to make it consistent, and make it look like what is in the designs.
@@ -21,17 +20,14 @@ interface NasaDao {
     fun getAsteroids(fromDate: Date = Date()): Flow<List<Asteroid>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUsers(vararg asteroid: Asteroid)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(asteroid: Asteroid)
+    suspend fun insertAsteroids(vararg asteroid: Asteroid)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(asteroids: Collection<Asteroid>)
 
     @Delete
-    suspend fun delete(asteroid: Asteroid)
+    suspend fun deleteAsteroid(asteroid: Asteroid)
 
     @Query("DELETE FROM asteroids")
-    suspend fun deleteAll(): Int
+    suspend fun deleteAllAsteroids(): Int
 }

@@ -6,13 +6,23 @@ import androidx.navigation.NavDirections
 import com.udacity.asteroidradar.api.convertAsteroidData
 import com.udacity.asteroidradar.api.retryIO
 import com.udacity.asteroidradar.db.NasaDao
+import com.udacity.asteroidradar.db.PictureDao
 import com.udacity.asteroidradar.model.Asteroid
+import com.udacity.asteroidradar.model.PictureOfDay
 import com.udacity.asteroidradar.repos.NasaRepo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val nasaRepo: NasaRepo, private val nasaDao: NasaDao) : ViewModel() {
+class MainViewModel(
+    private val nasaRepo: NasaRepo,
+    private val nasaDao: NasaDao,
+    private val pictureDao: PictureDao
+) : ViewModel() {
+
     companion object {
         private const val MEDIA_TYPE_IMAGE = "image"
     }
@@ -20,12 +30,8 @@ class MainViewModel(private val nasaRepo: NasaRepo, private val nasaDao: NasaDao
     private val _navigate = MutableSharedFlow<NavDirections>()
     val navigate = _navigate.asSharedFlow()
 
-    private val _imageUrl = MutableStateFlow<String?>(null)
-    val imageUrl = _imageUrl.asStateFlow()
-
-    private val _imageDescription = MutableStateFlow<String?>(null)
-    val imageDescription = _imageDescription.asStateFlow()
-
+    val pictureOfDay =
+        pictureDao.getPicture().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PictureOfDay(0, "", "", ""))
     val asteroidsList = nasaDao.getAsteroids().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     init {
@@ -35,10 +41,10 @@ class MainViewModel(private val nasaRepo: NasaRepo, private val nasaDao: NasaDao
 
     private fun getImageOfTheDay() {
         viewModelScope.launch(Dispatchers.IO) {
-            val pictureOfDay = nasaRepo.getImageOfTheDay()
-            if (pictureOfDay.mediaType == MEDIA_TYPE_IMAGE) {
-                _imageUrl.value = pictureOfDay.url
-                _imageDescription.value = pictureOfDay.title
+            retryIO(desc = "Get Image of the day") { nasaRepo.getImageOfTheDay() }?.apply {
+                if (mediaType == MEDIA_TYPE_IMAGE) {
+                    pictureDao.insertPicture(this)
+                }
             }
         }
     }

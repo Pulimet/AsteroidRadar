@@ -36,6 +36,7 @@ object Di {
             Room.databaseBuilder(androidContext(), NasaDatabase::class.java, "nasa_database").build()
         }
         single { get<NasaDatabase>().nasaDao() }
+        single { get<NasaDatabase>().pictureDao() }
 
         // WorkManager
         single { WorkManager.getInstance(androidContext()) }
